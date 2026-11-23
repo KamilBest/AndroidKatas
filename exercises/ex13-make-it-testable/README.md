@@ -1,0 +1,23 @@
+# ex13 · Refactor to testable code
+
+**Difficulty:** medium · **Time:** 45 min · **Category:** Testability · refactoring · **Type:** refactor
+
+## Goal
+Turn an untestable booking service into a class with injected dependencies, so the ready tests pass.
+
+- **File:** `BookingService.kt` (tests are ready; they don't compile before the refactor)
+- **Run:** `./gradlew :ex13-make-it-testable:test detektMain`
+
+## Task
+1. At the top of the file list the hidden dependencies (`now()`, `UUID`, the HTTP singleton, `GlobalScope`, `println`) and what each one breaks in tests.
+2. `object BookingService` → class `BookingService(clock, ids, api, analytics, appScope)`.
+3. Same logic (see KDoc): less than 2 h from now → `TooLate`; weekend → `ClinicClosed`; `IOException` → `Failed(true)`, other error → `Failed(false)`; success → a "booking_created" event in the background and `Booked(id, "WAW-" + first 6 characters of id in upper case)`. Time is in the `Europe/Warsaw` zone.
+4. Detekt forbids `now()` without a clock and `GlobalScope`.
+
+**Extra (optional):** add your own test for the 2 h limit across a DST change (for example 29 March 2026).
+
+## Background
+- A hidden dependency is anything a test cannot replace: the current time, random ids, singletons, global scopes.
+- Constructor injection makes them visible and replaceable. `Clock.fixed(...)` in tests, `LocalDateTime.now(clock.withZone(zone))` in code.
+- A "seam" is a place where you can change behaviour without editing the code, for example an interface passed in the constructor.
+- Fire-and-forget work belongs to an injected application `CoroutineScope`, not `GlobalScope`, so tests can wait for it.

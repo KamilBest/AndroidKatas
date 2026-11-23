@@ -1,0 +1,69 @@
+build:
+  maxIssues: 0
+
+coroutines:
+  active: true
+  GlobalCoroutineUsage:
+    active: true
+  InjectDispatcher:
+    active: true
+    dispatcherNames: ['IO', 'Default', 'Unconfined']
+  RedundantSuspendModifier:
+    active: true
+  SleepInsteadOfDelay:
+    active: true
+  SuspendFunSwallowedCancellation:
+    active: true
+  SuspendFunWithFlowReturnType:
+    active: true
+
+exceptions:
+  TooGenericExceptionCaught:
+    active: true
+  SwallowedException:
+    active: true
+  ThrowingExceptionsWithoutMessageOrCause:
+    active: true
+
+potential-bugs:
+  UnsafeCallOnNullableType:
+    active: true
+  LateinitUsage:
+    active: true
+    ignoreOnClassesPattern: '.*Activity|.*Fragment'
+
+style:
+  MagicNumber:
+    active: false
+  ForbiddenComment:
+    active: false
+  ReturnCount:
+    max: 4
+  UnusedPrivateMember:
+    active: true
+  ForbiddenMethodCall:
+    active: true
+    methods:
+      - reason: 'Inject a Clock instead of reading the system time'
+        value: 'java.lang.System.currentTimeMillis'
+      - reason: 'Inject a Clock instead of reading the system time'
+        value: 'java.time.LocalDate.now'
+      - reason: 'Inject a Clock instead of reading the system time'
+        value: 'java.time.Instant.now'
+      - reason: 'Use a logger injected through the constructor'
+        value: 'android.util.Log.d'
+      - reason: 'Thread.sleep blocks the thread; use delay in coroutines'
+        value: 'java.lang.Thread.sleep'
+
+complexity:
+  LongMethod:
+    threshold: 50
+  LongParameterList:
+    functionThreshold: 7
+    constructorThreshold: 9
+  TooManyFunctions:
+    active: false
+
+naming:
+  FunctionNaming:
+    ignoreAnnotated: ['Composable', 'Test']
