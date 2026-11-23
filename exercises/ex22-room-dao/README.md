@@ -26,3 +26,39 @@ Room checks SQL at compile time, so a typo in a column name is a build error.
 - A condition in `UPDATE` (`WHERE takenAt IS NULL`) is atomic. "Read, check, write" in Kotlin has a race.
 - `@Transaction` on an `open` method with a body runs several queries as one transaction.
 - Use `:param` bind parameters, never string concatenation (SQL injection).
+
+## Reference
+Syntax you will likely need. The examples use other data than the task, so they show the API, not the solution.
+
+```kotlin
+@Dao
+abstract class NoteDao {
+    @Upsert                                           // insert or update
+    abstract suspend fun upsert(note: NoteEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    abstract suspend fun insertAll(notes: List<NoteEntity>)
+
+    @Query("SELECT * FROM notes ORDER BY title COLLATE NOCASE")   // case-insensitive order
+    abstract fun observeAll(): Flow<List<NoteEntity>>
+
+    @Query("SELECT * FROM notes WHERE createdAt BETWEEN :from AND :to ORDER BY createdAt ASC")
+    abstract fun observeBetween(from: Instant, to: Instant): Flow<List<NoteEntity>>
+
+    @Query("UPDATE notes SET title = :title WHERE id = :id")
+    abstract suspend fun rename(id: Long, title: String): Int    // number of changed rows
+
+    @Query("DELETE FROM notes WHERE folderId = :folderId AND createdAt > :after")
+    abstract suspend fun deleteNewer(folderId: Long, after: Instant)
+
+    @Transaction                                      // both calls in one transaction
+    open suspend fun replace(folderId: Long, after: Instant, notes: List<NoteEntity>) {
+        deleteNewer(folderId, after)
+        insertAll(notes)
+    }
+}
+```
+
+- [Android: accessing data with DAOs](https://developer.android.com/training/data-storage/room/accessing-data)
+- [Android: Room queries with Flow](https://developer.android.com/training/data-storage/room/async-queries)
+- [Android: testing and debugging the database](https://developer.android.com/training/data-storage/room/testing-db)

@@ -21,3 +21,40 @@ Write four small composables, each with a different side effect.
 - `DisposableEffect(key)` is a "register / clean up" pair (`onDispose`), like `onStart`/`onStop`.
 - `rememberUpdatedState(value)` lets a long-running effect see the newest value without restarting.
 - `repeatOnLifecycle(STARTED)` stops collecting in the background and starts again when the screen is visible.
+
+## Reference
+Syntax you will likely need. The examples use other data than the task, so they show the API, not the solution.
+
+```kotlin
+// A new id cancels the old coroutine and starts a new one
+var price by remember { mutableStateOf<Int?>(null) }
+LaunchedEffect(id) {
+    price = null
+    price = load(id)
+}
+
+// Register / clean up
+DisposableEffect(source) {
+    val listener = Listener { value -> latest = value }
+    source.add(listener)
+    onDispose { source.remove(listener) }
+}
+
+// Always call the newest lambda, without restarting the effect
+val currentOnDone by rememberUpdatedState(onDone)
+LaunchedEffect(Unit) {
+    delay(1_000)
+    currentOnDone()
+}
+
+// Collect only while the screen is at least STARTED
+val lifecycleOwner = LocalLifecycleOwner.current
+LaunchedEffect(flow, lifecycleOwner) {
+    lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+        flow.collect { handle(it) }
+    }
+}
+```
+
+- [Android: side-effects in Compose](https://developer.android.com/develop/ui/compose/side-effects)
+- [Android: lifecycle-aware coroutines](https://developer.android.com/topic/libraries/architecture/coroutines)

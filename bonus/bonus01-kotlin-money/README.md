@@ -24,3 +24,29 @@ The amount is stored in grosze (`Long`): 12.34 zł = `1234`.
 - `Math.addExact` and friends throw on overflow instead of silently wrapping around.
 - `HALF_EVEN` (banker's rounding) rounds halves to the even digit, so errors cancel out over many operations.
 - Integer division drops the remainder; the remainder is exactly the "lost" grosze you must hand out.
+
+## Reference
+Syntax you will likely need. The examples use other data than the task, so they show the API, not the solution.
+
+```kotlin
+val amount = BigDecimal("12.34")
+amount.scale()                                       // 2 digits after the dot
+amount.movePointRight(2).longValueExact()            // 1234
+BigDecimal.valueOf(1234).movePointLeft(2)            // 12.34
+BigDecimal("10.005").setScale(2, RoundingMode.HALF_EVEN)   // 10.00
+"12.3x".toBigDecimalOrNull()                         // null
+
+Math.addExact(a, b)          // throws ArithmeticException on overflow
+Math.subtractExact(a, b)
+Math.multiplyExact(a, n.toLong())
+Math.negateExact(a)
+
+7 / 3                        // 2
+7 % 3                        // 1
+"%d.%02d".format(12, 5)      // "12.05"
+
+// operator fun plus / minus / times / unaryMinus; implement Comparable for < and >
+```
+
+- [Java: BigDecimal](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/math/BigDecimal.html)
+- [Java: RoundingMode](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/math/RoundingMode.html)

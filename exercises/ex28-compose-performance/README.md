@@ -22,3 +22,26 @@ Don't remove the `counter.hit(...)` lines.
 - `derivedStateOf` passes a change on only when the *result* changes (scroll position changes often, "show the button" rarely).
 - `remember(key) { … }` recomputes only when the key changes.
 - State read inside a modifier lambda (`offset { }`, `graphicsLayer { }`, `drawBehind { }`) skips composition and is read only in layout or draw.
+
+## Reference
+Syntax you will likely need. The examples use other data than the task, so they show the API, not the solution.
+
+```kotlin
+val listState = rememberLazyListState()
+
+// Recomposes only when the Boolean flips, not on every scrolled pixel
+val showButton by remember {
+    derivedStateOf { listState.firstVisibleItemIndex > 0 }
+}
+
+// Sorted again only when `items` changes
+val sorted = remember(items) { items.sortedBy { it.name } }
+
+val offsetX by animateFloatAsState(targetValue = target, label = "x")
+// State read inside the lambda: only layout / draw runs again, not composition
+Box(Modifier.offset { IntOffset(offsetX.roundToInt(), 0) })
+Box(Modifier.graphicsLayer { translationX = offsetX })
+```
+
+- [Android: Compose performance best practices](https://developer.android.com/develop/ui/compose/performance/bestpractices)
+- [Android: Compose phases](https://developer.android.com/develop/ui/compose/phases)

@@ -25,3 +25,32 @@ Write at least 7 tests: initial state, amount error and its disappearance, comma
 - To test a callback, capture its value in a `var` (`onSubmit = { submitted = it }`).
 - The test rule waits for Compose to be idle by itself, so you never need `Thread.sleep`.
 - A Robot (page object) hides the "how" behind methods like `enterAmount(...)`, so tests read like scenarios.
+
+## Reference
+Syntax you will likely need. The examples use other data than the task, so they show the API, not the solution.
+
+```kotlin
+@get:Rule
+val rule = createComposeRule()
+
+@Test
+fun `saves the typed name`() {
+    var saved: String? = null
+    rule.setContent { NameForm(onSave = { saved = it }) }
+
+    rule.onNodeWithTag("name").performTextInput("Ala")
+    rule.onNodeWithText("Too short").assertDoesNotExist()
+    rule.onNodeWithText("Save").assertIsEnabled().performClick()
+
+    assertEquals("Ala", saved)
+}
+
+rule.onNodeWithTag("name").performTextReplacement("Ola")   // replaces the whole text
+rule.onNodeWithTag("name").performTextClearance()
+rule.onNodeWithText("Save").assertIsNotEnabled()
+rule.onNodeWithTag("counter").assertTextContains("3/20")
+rule.onNodeWithText("Error", substring = true).assertExists()
+```
+
+- [Android: testing your Compose layout](https://developer.android.com/develop/ui/compose/testing)
+- [Android: Compose testing cheatsheet](https://developer.android.com/develop/ui/compose/testing/testing-cheatsheet)

@@ -22,3 +22,30 @@ Write the ViewModel of a visit form that comes back filled in after the system k
 - `handle.getStateFlow(key, initial)` gives a `StateFlow`, `handle[key] = value` writes. The handle is the single source of truth for the fields.
 - Keep only small, serializable values there. A running request cannot be resumed after process death, so don't save it.
 - Navigation puts route arguments into the same `SavedStateHandle`. A "process death" test = a new ViewModel with the same handle.
+
+## Reference
+Syntax you will likely need. The examples use other data than the task, so they show the API, not the solution.
+
+```kotlin
+class SearchViewModel(private val handle: SavedStateHandle) : ViewModel() {
+    // Throws IllegalStateException when the argument is missing
+    private val userId: String = checkNotNull(handle["userId"]) { "userId is missing" }
+
+    val query: StateFlow<String> = handle.getStateFlow("query", "")
+    fun onQueryChange(value: String) {
+        handle["query"] = value
+    }
+
+    private val isLoading = MutableStateFlow(false)   // not in the handle
+
+    val state: StateFlow<SearchState> = combine(query, isLoading) { q, loading ->
+        SearchState(q, loading)
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, SearchState())
+}
+
+// "Process death" in a test: a new ViewModel with the same handle
+val handle = SavedStateHandle(mapOf("userId" to "u1"))
+```
+
+- [Android: Saved State module for ViewModel](https://developer.android.com/topic/libraries/architecture/viewmodel/viewmodel-savedstate)
+- [Android: ViewModel overview](https://developer.android.com/topic/libraries/architecture/viewmodel)

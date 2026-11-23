@@ -25,3 +25,28 @@ Write a repository where the UI **always** reads from the database and the netwo
 - Three models: `Dto` (API), `Entity` (database), domain (app). Mappers are pure functions.
 - `Mutex` + the freshness check *inside* the lock: whoever waited sees the new sync time and skips the network.
 - An unknown status from the backend must not crash the app, so map it to `UNKNOWN`.
+
+## Reference
+Syntax you will likely need. The examples use other data than the task, so they show the API, not the solution.
+
+```kotlin
+BigDecimal("123.45").movePointRight(2).longValueExact()   // 12345
+
+enum class Status { OPEN, CLOSED, UNKNOWN }
+val status = Status.entries.firstOrNull { it.name == raw } ?: Status.UNKNOWN
+
+fun observe(): Flow<List<Item>> = dao.observeAll().map { rows -> rows.map { it.toDomain() } }
+
+val mutex = Mutex()
+
+suspend fun sync(): SyncResult = mutex.withLock {
+    if (isFresh()) SyncResult.Skipped          // checked inside the lock
+    else SyncResult.Updated(download())
+}
+
+Duration.between(lastSync, clock.instant()) < maxAge
+```
+
+- [Android: offline-first apps](https://developer.android.com/topic/architecture/data-layer/offline-first)
+- [Kotlin: shared mutable state (Mutex)](https://kotlinlang.org/docs/shared-mutable-state-and-concurrency.html)
+- [Android: data layer](https://developer.android.com/topic/architecture/data-layer)

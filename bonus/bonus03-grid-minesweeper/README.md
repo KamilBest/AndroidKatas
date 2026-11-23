@@ -25,3 +25,36 @@ Write the logic of Minesweeper and a shortest path in a maze, with no graphics a
 - To rebuild the path, remember `cameFrom[neighbour] = current` and walk back from the target.
 - Flood fill in Minesweeper is BFS that spreads only from cells with 0 neighbouring mines.
 - A queue instead of recursion avoids `StackOverflowError` on big boards. `Set`/`Map` of positions instead of 2D arrays keeps the state easy to copy.
+
+## Reference
+Syntax you will likely need. The examples use other data than the task, so they show the API, not the solution.
+
+```kotlin
+data class Pos(val row: Int, val col: Int)
+
+val directions = listOf(Pos(-1, 0), Pos(1, 0), Pos(0, -1), Pos(0, 1))
+val around = directions.map { Pos(p.row + it.row, p.col + it.col) }
+
+val grid = listOf("..#", "...")
+grid.getOrNull(5)?.getOrNull(0)                      // null instead of an exception
+
+val queue = ArrayDeque<Pos>()
+queue.addLast(start)
+val visited = mutableSetOf(start)
+val cameFrom = mutableMapOf<Pos, Pos>()
+while (queue.isNotEmpty()) {
+    val current = queue.removeFirst()
+    // for every new neighbour: visited += it; cameFrom[it] = current; queue.addLast(it)
+}
+
+generateSequence(target) { cameFrom[it] }.toList().reversed()   // walk back to the start
+
+buildString {
+    append('#')
+    appendLine()
+}
+listOf(".", "1").joinToString("")                    // ".1"
+```
+
+- [API: ArrayDeque](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-array-deque/)
+- [Kotlin: collections overview](https://kotlinlang.org/docs/collections-overview.html)

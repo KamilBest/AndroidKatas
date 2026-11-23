@@ -42,3 +42,24 @@ Rule: the `when` over states has **no `else`** branch.
 ### The reducer pattern
 A reducer is a pure function `(state, event) -> newState`: no I/O, no coroutines, no hidden fields. The same input always gives the same output, so you test it with plain values. It is the core of MVI (see ex11) and Redux. `replay` is a `fold` over events with the reducer, which is how event sourcing rebuilds state from history.
 
+## Reference
+Syntax you will likely need. The examples use other data than the task, so they show the API, not the solution.
+
+```kotlin
+sealed interface Light {
+    data object Off : Light
+    data class On(val brightness: Int) : Light
+}
+
+// No else: add a new Light and the compiler shows every `when` to update
+fun describe(light: Light): String = when (light) {
+    Light.Off -> "off"
+    is Light.On -> "on at ${light.brightness}%"
+}
+
+listOf(1, 2, 3).fold(0) { sum, n -> sum + n }   // 6
+```
+
+- [Kotlin: sealed classes and interfaces](https://kotlinlang.org/docs/sealed-classes.html)
+- [Kotlin: when expressions](https://kotlinlang.org/docs/control-flow.html#when-expressions-and-statements)
+- [Kotlin: fold and reduce](https://kotlinlang.org/docs/collection-aggregate.html#fold-and-reduce)

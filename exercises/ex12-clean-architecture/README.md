@@ -27,3 +27,28 @@ Write the use case that refunds an invoice (dentist, physiotherapy) within a yea
 - Dependency Inversion: the use case depends on interfaces defined in the domain (`PolicyRepository`, `UsageRepository`); `data` implements them.
 - A use case is one action with `operator fun invoke`, so you call it like a function.
 - Time zones matter: 23:30 UTC on 31 December is already the next year in Warsaw.
+
+## Reference
+Syntax you will likely need. The examples use other data than the task, so they show the API, not the solution.
+
+```kotlin
+class GreetUserUseCase(private val users: UserRepository) {
+    operator fun invoke(id: String): String = "Hi ${users.find(id).name}"
+}
+val greet = GreetUserUseCase(repo)
+greet("42")                                    // called like a function
+
+// Mapper in the data layer
+fun UserDto.toDomain(): User = User(id = id, name = fullName.trim())
+
+val zone = ZoneId.of("Europe/Warsaw")
+val today: LocalDate = LocalDate.now(clock.withZone(zone))
+val days: Long = ChronoUnit.DAYS.between(someDate, today)
+someDate.isAfter(today)
+today.year                                     // 2026
+minOf(a, b)
+```
+
+- [Android: domain layer](https://developer.android.com/topic/architecture/domain-layer)
+- [Android: data layer](https://developer.android.com/topic/architecture/data-layer)
+- [Java: Clock](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/Clock.html)

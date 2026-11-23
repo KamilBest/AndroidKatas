@@ -23,3 +23,10 @@ Tone: specific, with reasons, no sarcasm.
 - Priorities: `blocker` (data leak, crash, data loss), `major` (memory leak, wrong thread), `minor` (readability, missing test), `nit` (cosmetics).
 - Health data and tokens are sensitive: no personal data in logs, no tokens in plain `SharedPreferences`.
 - Write about the code, not the person ("this line logs the PESEL"), and mention what is good.
+
+## Reference
+No code to write here: you read and judge.
+
+- [Google: how to do a code review](https://google.github.io/eng-practices/review/reviewer/)
+- [Android: security best practices](https://developer.android.com/privacy-and-security/security-tips)
+- [Android: Compose side-effects](https://developer.android.com/develop/ui/compose/side-effects)

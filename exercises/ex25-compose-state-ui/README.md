@@ -23,3 +23,40 @@ Write the "Today's doses" screen as a stateless composable that passes ready UI 
 - `toggleable` on the whole row and `onCheckedChange = null` on the inner `Switch`/`Checkbox` give one node for TalkBack and for tests.
 - `key` in `LazyColumn` lets Compose recognise the same row after the list changes.
 - `modifier: Modifier = Modifier` is the first optional parameter and goes to the root element.
+
+## Reference
+Syntax you will likely need. The examples use other data than the task, so they show the API, not the solution.
+
+```kotlin
+@Composable
+fun TodoList(
+    state: TodoState,
+    onToggle: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    LazyColumn(modifier) {
+        item { Text("Header") }
+        items(state.items, key = { it.id }) { todo ->
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .toggleable(value = todo.done, onValueChange = { onToggle(todo.id) })
+                    .testTag("todo-${todo.id}"),
+            ) {
+                Text("${todo.title} · ${todo.time}")
+                Checkbox(checked = todo.done, onCheckedChange = null)   // the row handles clicks
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun TodoListPreview() {
+    TodoList(TodoState(items = emptyList()), onToggle = {})
+}
+```
+
+- [Android: state and state hoisting](https://developer.android.com/develop/ui/compose/state)
+- [Android: lists and grids](https://developer.android.com/develop/ui/compose/lists)
+- [Android: semantics in Compose](https://developer.android.com/develop/ui/compose/accessibility/semantics)

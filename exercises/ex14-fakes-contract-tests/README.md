@@ -20,3 +20,32 @@ Write a fake repository and run one shared test suite (a contract) on every impl
 - Test doubles: a **fake** is a working, simplified implementation; a **stub** returns fixed answers; a **spy** records calls; a **mock** is a library object you `verify`.
 - How do you know the fake behaves like the real thing? With a **contract test**: an abstract test class with `abstract fun createRepository()`, run once per implementation.
 - Fakes make tests test behaviour, not calls, so they break less when the implementation changes.
+
+## Reference
+Syntax you will likely need. The examples use other data than the task, so they show the API, not the solution.
+
+```kotlin
+val items = MutableStateFlow<Map<String, Note>>(emptyMap())
+
+items.update { it + (note.id to note) }       // insert or replace by key
+items.update { it - id }                      // remove; a missing key changes nothing
+val sorted: Flow<List<Note>> = items.map { map -> map.values.sortedBy { it.title } }
+
+// Contract: one abstract test class, one subclass per implementation
+abstract class NotesRepositoryContract {
+    abstract fun createRepository(): NotesRepository
+
+    @Test
+    fun `saved note can be read`() = runTest {
+        val repo = createRepository()
+        // given / when / then
+    }
+}
+
+class FakeNotesRepositoryTest : NotesRepositoryContract() {
+    override fun createRepository(): NotesRepository = FakeNotesRepository()
+}
+```
+
+- [Android: test doubles (fakes vs mocks)](https://developer.android.com/training/testing/fundamentals/test-doubles)
+- [Kotlin: asynchronous Flow](https://kotlinlang.org/docs/coroutines-flow.html)

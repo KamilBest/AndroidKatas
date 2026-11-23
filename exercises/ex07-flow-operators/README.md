@@ -23,5 +23,36 @@ Build a drug search that does not call the API on every key press, and turn a ca
 ## Background
 - `flatMapLatest` cancels the previous inner flow when a new value arrives.
 - `catch` only catches errors from upstream. Put it on the outer flow and the first error ends the whole search, so it belongs inside `flatMapLatest`.
-- `stateIn(scope, WhileSubscribed(5_000), initial)` turns a cold flow into a hot `StateFlow`; the 5 s keep it alive during a rotation.
-- `callbackFlow` needs `awaitClose { unregister }`, otherwise the flow ends at once or the listener leaks.
+- `stateIn(scope, SharingStarted.WhileSubscribed(5_000), initialValue)` turns a cold flow into a hot `StateFlow`; the 5 s keep it alive during a rotation.
+- `callbackFlow` needs `awaitClose { unregister(listener) }`, otherwise the flow ends at once or the listener leaks.
+
+## Reference
+Syntax you will likely need. The examples use other data than the task, so they show the API, not the solution.
+
+```kotlin
+// debounce needs @OptIn(FlowPreview::class), flatMapLatest needs @OptIn(ExperimentalCoroutinesApi::class)
+val query = MutableStateFlow("")
+
+query.debounce(300)                              // emits after 300 ms without a new value
+query.map { it.trim() }
+flowOf("a", "ab", "ab").distinctUntilChanged()   // a, ab
+
+ids.flatMapLatest { id -> flow { emit(load(id)) } }   // a new id cancels the old load
+
+flow { emit(api.call()) }
+    .onStart { emit(fallback) }                  // emitted first
+    .catch { e -> emit(fallback) }               // catches errors from the operators above it
+
+val state: StateFlow<String> = query.stateIn(scope, SharingStarted.WhileSubscribed(5_000), "")
+
+fun values(): Flow<Int> = callbackFlow {
+    val listener = Listener { value -> trySend(value) }
+    source.register(listener)
+    awaitClose { source.unregister(listener) }   // runs when the collector stops
+}
+```
+
+- [Kotlin: asynchronous Flow](https://kotlinlang.org/docs/coroutines-flow.html)
+- [Android: StateFlow and SharedFlow](https://developer.android.com/kotlin/flow/stateflow-and-sharedflow)
+- [API: callbackFlow](https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/callback-flow.html)
+- [Android: testing flows](https://developer.android.com/kotlin/flow/test)
