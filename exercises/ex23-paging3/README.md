@@ -24,3 +24,28 @@ Write the `PagingSource` for a long list of pharmacies from an API with page num
 - `nextKey = null` tells Paging the list has ended; `prevKey = null` that it has no beginning before this page.
 - `getRefreshKey` decides which page to start from after a refresh (for example after `invalidate()`).
 - Errors go back as `LoadResult.Error`, so the UI can show "retry" at the bottom of the list.
+
+## Reference
+Syntax you will likely need. The examples use other data than the task, so they show the API, not the solution.
+
+```kotlin
+// Inside load(params: LoadParams<Int>):
+params.key                  // Int? – null on the first load
+params.loadSize             // how many items Paging asks for
+
+LoadResult.Page(data = items, prevKey = null, nextKey = 2)
+LoadResult.Error<Int, Item>(exception)
+
+// Inside getRefreshKey(state: PagingState<Int, Item>):
+state.anchorPosition                          // Int? – the position the user last saw
+state.closestPageToPosition(position)         // LoadResult.Page? with prevKey / nextKey
+key?.plus(1)
+
+// Test
+val pager = TestPager(PagingConfig(pageSize = 20), source)
+val first = pager.refresh() as PagingSource.LoadResult.Page
+val second = pager.append() as PagingSource.LoadResult.Page
+```
+
+- [Android: load and display paged data](https://developer.android.com/topic/libraries/architecture/paging/v3-paged-data)
+- [Android: test your Paging implementation](https://developer.android.com/topic/libraries/architecture/paging/test)

@@ -21,3 +21,36 @@ Turn an untestable booking service into a class with injected dependencies, so t
 - Constructor injection makes them visible and replaceable. `Clock.fixed(...)` in tests, `LocalDateTime.now(clock.withZone(zone))` in code.
 - A "seam" is a place where you can change behaviour without editing the code, for example an interface passed in the constructor.
 - Fire-and-forget work belongs to an injected application `CoroutineScope`, not `GlobalScope`, so tests can wait for it.
+
+## Reference
+Syntax you will likely need. The examples use other data than the task, so they show the API, not the solution.
+
+```kotlin
+fun interface IdGenerator { fun newId(): String }
+interface Analytics { fun track(name: String) }
+
+class Greeter(
+    private val clock: Clock,
+    private val ids: IdGenerator,
+    private val analytics: Analytics,
+    private val appScope: CoroutineScope,      // instead of GlobalScope
+) {
+    fun greet(): String {
+        val now = LocalDateTime.now(clock.withZone(ZoneId.of("Europe/Warsaw")))
+        appScope.launch { analytics.track("greeted") }   // fire-and-forget
+        return "${ids.newId()} at $now"
+    }
+}
+
+Duration.between(start, end) < Duration.ofHours(2)
+date.dayOfWeek in setOf(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY)
+"abcdef1234".take(6).uppercase()               // ABCDEF
+
+// In a test
+val clock = Clock.fixed(Instant.parse("2026-03-02T10:00:00Z"), ZoneOffset.UTC)
+val greeter = Greeter(clock, ids = { "id-1" }, analytics = FakeAnalytics(), appScope = backgroundScope)
+```
+
+- [Android: coroutines best practices (inject dispatchers and scopes)](https://developer.android.com/kotlin/coroutines/coroutines-best-practices)
+- [Android: test doubles](https://developer.android.com/training/testing/fundamentals/test-doubles)
+- [Java: Clock](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/Clock.html)

@@ -23,3 +23,48 @@ The test does not compile until `ApiModule` and `@IoDispatcher` exist. That is o
 - A qualifier tells apart two dependencies of the same type.
 - No scope annotation = a new instance for every injection. A scope (`@Singleton`) ties one instance to a component's lifetime.
 - `@TestInstallIn(replaces = [...])` replaces a module for the whole test set; `@UninstallModules` for one test.
+
+## Reference
+Syntax you will likely need. The examples use other data than the task, so they show the API, not the solution.
+
+```kotlin
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class DefaultDispatcher
+
+@Module
+@InstallIn(SingletonComponent::class)
+object CoroutinesModule {
+    @Provides
+    @DefaultDispatcher
+    fun provideDefault(): CoroutineDispatcher = Dispatchers.Default
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class RepositoryModule {
+    @Binds
+    @Singleton
+    abstract fun bindUsers(impl: DefaultUserRepository): UserRepository
+}
+
+class DefaultUserRepository @Inject constructor(
+    private val api: UserApi,
+    @DefaultDispatcher private val dispatcher: CoroutineDispatcher,
+) : UserRepository
+
+@HiltViewModel
+class UserViewModel @Inject constructor(private val users: UserRepository) : ViewModel()
+
+// Test: replace a module for all tests
+@Module
+@TestInstallIn(components = [SingletonComponent::class], replaces = [CoroutinesModule::class])
+object TestCoroutinesModule {
+    @Provides
+    @DefaultDispatcher
+    fun provideDefault(): CoroutineDispatcher = UnconfinedTestDispatcher()
+}
+```
+
+- [Android: dependency injection with Hilt](https://developer.android.com/training/dependency-injection/hilt-android)
+- [Android: Hilt testing guide](https://developer.android.com/training/dependency-injection/hilt-testing)

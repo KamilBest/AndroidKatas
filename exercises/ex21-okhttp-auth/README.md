@@ -23,3 +23,40 @@ Add the access token to every request automatically, and refresh it only once af
 - OkHttp runs these on its own threads, not in coroutines, so `refresh` is blocking and the lock is `synchronized`.
 - Comparing the request's token with the current one *inside* the lock is what stops 5 parallel refreshes.
 - `response.priorResponse != null` stops the endless loop 401 → refresh → 401.
+
+## Reference
+Syntax you will likely need. The examples use other data than the task, so they show the API, not the solution.
+
+```kotlin
+class ApiKeyInterceptor(private val keys: KeyStore) : Interceptor {
+    override fun intercept(chain: Interceptor.Chain): Response {
+        val original = chain.request()
+        val request = original.newBuilder()
+            .header("X-Api-Key", keys.current())
+            .removeHeader("X-Debug")
+            .build()
+        return chain.proceed(request)
+    }
+}
+
+class RetryAuthenticator : Authenticator {
+    override fun authenticate(route: Route?, response: Response): Request? {
+        if (response.priorResponse != null) return null      // already retried once
+        val sentHeader: String? = response.request.header("Authorization")
+        synchronized(this) {
+            // compare, maybe refresh, then retry:
+            return response.request.newBuilder()
+                .header("Authorization", "Bearer new-token")
+                .build()
+        }
+    }
+}
+
+val client = OkHttpClient.Builder()
+    .addInterceptor(ApiKeyInterceptor(keys))
+    .authenticator(RetryAuthenticator())
+    .build()
+```
+
+- [OkHttp (docs: Interceptors, Recipes → Handling authentication)](https://github.com/square/okhttp)
+- [Android: security best practices](https://developer.android.com/privacy-and-security/security-tips)

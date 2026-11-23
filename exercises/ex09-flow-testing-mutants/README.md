@@ -24,3 +24,28 @@ A mutant "survived" = your tests did not notice the bug. Don't look into `src/mu
 - Boundary values: test on the threshold and next to it (120/121, 39/40, 19/20, 250/251).
 - Each "only after …" rule needs a test with two streaks.
 - `toList()` is enough for finite flows; Turbine (`test { awaitItem(); awaitComplete() }`) helps with timing and flows that never end.
+
+## Reference
+Syntax you will likely need. The examples use other data than the task, so they show the API, not the solution.
+
+```kotlin
+@Test
+fun `doubles every value`() = runTest {
+    val result = flowOf(1, 2, 3).map { it * 2 }.toList()
+    assertEquals(listOf(2, 4, 6), result)
+}
+
+// Turbine: step by step, and fails on unexpected events
+@Test
+fun `emits two values and completes`() = runTest {
+    flowOf(1, 2).test {
+        assertEquals(1, awaitItem())
+        assertEquals(2, awaitItem())
+        awaitComplete()
+    }
+}
+```
+
+- [Turbine (README with examples)](https://github.com/cashapp/turbine)
+- [Android: testing flows](https://developer.android.com/kotlin/flow/test)
+- [kotlin.test API](https://kotlinlang.org/api/core/kotlin-test/)

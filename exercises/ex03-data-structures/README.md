@@ -21,5 +21,30 @@ Before you code, write your approach and its complexity in a comment.
 
 ## Background
 - O(1) needs two structures: a hash map finds the node, a doubly linked list keeps the usage order.
-- `LinkedHashMap(capacity, 0.75f, accessOrder = true)` already does this; the task asks you to build the structure yourself.
+- `LinkedHashMap(capacity, 0.75f, true)` (the last argument is `accessOrder`) already does this; the task asks you to build the structure yourself.
 - Sentinel `head` and `tail` nodes remove most edge-case `if`s.
+
+## Reference
+Syntax you will likely need. The examples use other data than the task, so they show the API, not the solution.
+
+```kotlin
+class Node(val key: String, var value: Int) {
+    var prev: Node? = null
+    var next: Node? = null
+}
+
+val index = HashMap<String, Node>()
+index["a"] = Node("a", 1)     // O(1)
+val node = index["a"]         // O(1), null when missing
+index.remove("a")
+
+// Unlink a node from a doubly linked list
+node?.prev?.next = node?.next
+node?.next?.prev = node?.prev
+
+// Only to compare with your version (the last argument is accessOrder):
+val builtIn = LinkedHashMap<String, Int>(16, 0.75f, true)
+```
+
+- [Kotlin: collections overview (Map)](https://kotlinlang.org/docs/collections-overview.html#map)
+- [Java: LinkedHashMap (access order)](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/LinkedHashMap.html)

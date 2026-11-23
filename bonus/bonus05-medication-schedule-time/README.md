@@ -27,3 +27,27 @@ Test dates: 2026-03-29 (02:00 → 03:00), 2026-10-25 (03:00 → 02:00), `Europe/
 - `ZonedDateTime.of(date, time, zone)` moves a time in the gap forward and picks the earlier offset in the overlap.
 - "Every N hours": add `Duration.ofHours(n)` to an `Instant`. "At 8:00": a separate `ZonedDateTime` for each day.
 - Never move to the next day with `+ 24 h`; use `plusDays` on a `LocalDate`. DST days have 23 or 25 hours.
+
+## Reference
+Syntax you will likely need. The examples use other data than the task, so they show the API, not the solution.
+
+```kotlin
+val zone = ZoneId.of("Europe/Warsaw")
+
+// Gap: 02:30 does not exist on 2026-03-29, so it becomes 03:30
+ZonedDateTime.of(LocalDate.of(2026, 3, 29), LocalTime.of(2, 30), zone)
+// Overlap: 02:30 happens twice on 2026-10-25, `of` picks the earlier one
+ZonedDateTime.of(LocalDate.of(2026, 10, 25), LocalTime.of(2, 30), zone).toInstant()
+zonedDateTime.withLaterOffsetAtOverlap()             // the later one, if you need it
+
+instant.plus(Duration.ofHours(8))                    // real elapsed time
+instant.atZone(zone).toLocalDate()
+date.plusDays(1)                                     // the next calendar day
+date.dayOfWeek                                       // DayOfWeek.SUNDAY
+
+generateSequence(from) { it.plusDays(1) }.takeWhile { it <= to }.toList()
+```
+
+- [Java: java.time package](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/package-summary.html)
+- [Java: ZonedDateTime (gaps and overlaps)](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/ZonedDateTime.html)
+- [Kotlin: sequences](https://kotlinlang.org/docs/sequences.html)

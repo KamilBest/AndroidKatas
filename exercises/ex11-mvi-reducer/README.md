@@ -28,3 +28,31 @@ An intent that is not allowed returns the same state and no effects.
 - MVI = Model-View-Intent, a unidirectional data flow: the UI sends intents, the reducer returns a new state plus effects, the UI renders the state.
 - The reducer is pure: no `suspend`, no scopes, no I/O. Effects are only *data* that someone else (a store) executes. Same pattern as the claim state machine in ex01.
 - Race protection is a condition in the reducer: ignore a late `SlotsLoaded` for another doctor, ignore a second `Confirm` while submitting.
+
+## Reference
+Syntax you will likely need. The examples use other data than the task, so they show the API, not the solution.
+
+```kotlin
+data class CounterState(val count: Int = 0, val isSaving: Boolean = false)
+
+sealed interface CounterIntent {
+    data object Increment : CounterIntent
+    data object Save : CounterIntent
+}
+
+sealed interface CounterEffect {
+    data class Persist(val count: Int) : CounterEffect
+}
+
+data class Next(val state: CounterState, val effects: List<CounterEffect> = emptyList())
+
+fun reduce(state: CounterState, intent: CounterIntent): Next = when (intent) {
+    CounterIntent.Increment -> Next(state.copy(count = state.count + 1))
+    CounterIntent.Save ->
+        if (state.isSaving) Next(state)   // not allowed: same state, no effects
+        else Next(state.copy(isSaving = true), listOf(CounterEffect.Persist(state.count)))
+}
+```
+
+- [Android: UI layer and unidirectional data flow](https://developer.android.com/topic/architecture/ui-layer)
+- [Kotlin: data classes and copy](https://kotlinlang.org/docs/data-classes.html#copying)

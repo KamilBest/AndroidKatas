@@ -28,3 +28,22 @@ SUT: `premiumCalculator()`, result in grosze.
 - Boundary values: test both sides of each boundary (17/18, 25/26…), because `<` vs `<=` bugs only show there.
 - Compute the expected result by hand and write the calculation in a comment. Copying it from the code tests nothing.
 - Mutation testing (see ex09) shows which bugs your tests would miss.
+
+## Reference
+Syntax you will likely need. The examples use other data than the task, so they show the API, not the solution.
+
+```kotlin
+@Test
+fun `buyer under 18 is rejected`() {
+    assertFailsWith<IllegalArgumentException> { ticketPrice(age = 17) }
+}
+
+@Test
+fun `18 year old pays 80 percent`() {
+    // 50.00 zł * 0.8 = 40.00 zł = 4000 grosze
+    assertEquals(4000, ticketPrice(age = 18))
+}
+```
+
+- [kotlin.test API](https://kotlinlang.org/api/core/kotlin-test/)
+- [Java: RoundingMode](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/math/RoundingMode.html)

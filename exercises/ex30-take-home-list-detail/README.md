@@ -26,3 +26,30 @@ Write the ViewModels of a prescription list and its details screen: mapping, scr
 - A sealed `UiState` (`Loading`, `Content`, `Empty`, `Error`) instead of several boolean flags that can contradict each other.
 - "No data" and "old data" are different errors: the first gets a full-screen error, the second a message.
 - Navigation puts arguments into `SavedStateHandle`, so the details ViewModel reads `id` from there.
+
+## Reference
+Syntax you will likely need. The examples use other data than the task, so they show the API, not the solution.
+
+```kotlin
+sealed interface ScreenState {
+    data object Loading : ScreenState
+    data class Content(val items: List<String>) : ScreenState
+    data object Empty : ScreenState
+}
+
+val state: StateFlow<ScreenState> = combine(repo.observeAll(), isRefreshing) { items, refreshing ->
+    if (items.isEmpty()) ScreenState.Empty else ScreenState.Content(items)
+}.stateIn(viewModelScope, SharingStarted.Eagerly, ScreenState.Loading)
+
+LocalDate.of(2026, 3, 12).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))   // "12.03.2026"
+val today = LocalDate.now(clock.withZone(ZoneId.of("Europe/Warsaw")))
+date.isBefore(today)
+
+list.sortedWith(compareBy<Item> { it.group }.thenBy { it.date })
+
+val id: String = checkNotNull(savedStateHandle["id"])
+```
+
+- [Android: UI layer state holders](https://developer.android.com/topic/architecture/ui-layer/stateholders)
+- [Android: UI events](https://developer.android.com/topic/architecture/ui-layer/events)
+- [Android: guide to app architecture](https://developer.android.com/topic/architecture)

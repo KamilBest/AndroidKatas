@@ -22,3 +22,33 @@ Connect a prescription list and a details screen with Navigation Compose. Screen
 - Every back stack entry has its own `SavedStateHandle`. To return a result, write it into the handle of the **previous** entry, then `popBackStack()`.
 - The screen's ViewModel gets the same `SavedStateHandle`, so route arguments are available there too (see ex30).
 - Screens should not know `NavController`; they get lambdas, and navigation lives in one place.
+
+## Reference
+Syntax you will likely need. The examples use other data than the task, so they show the API, not the solution.
+
+```kotlin
+@Serializable data object Home
+@Serializable data class Profile(val userId: String)
+
+NavHost(navController, startDestination = Home) {
+    composable<Home> {
+        HomeScreen(onOpen = { id ->
+            navController.navigate(Profile(id)) { launchSingleTop = true }
+        })
+    }
+    composable<Profile> { entry ->
+        val route: Profile = entry.toRoute()
+        ProfileScreen(route.userId, onBack = { navController.popBackStack() })
+    }
+}
+
+// Return a result to the previous screen
+navController.previousBackStackEntry?.savedStateHandle?.set("result", "ok")
+navController.popBackStack()
+
+// Read it on the previous screen (inside its composable<...> { entry -> })
+val result by entry.savedStateHandle.getStateFlow<String?>("result", null).collectAsState()
+```
+
+- [Android: navigation with Compose](https://developer.android.com/guide/navigation)
+- [Android: type safety in Kotlin DSL and Navigation Compose](https://developer.android.com/guide/navigation/design/type-safety)

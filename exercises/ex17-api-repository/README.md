@@ -24,3 +24,41 @@ Write a repository that only talks to the network (no database): it maps DTOs to
 - Upper layers should see domain errors (`Offline`, `NotFound`), not HTTP exceptions.
 - Request deduplication: keep the running request (`CompletableDeferred` or `async`) in a map; later callers `await()` it.
 - Guard the maps with a `Mutex`, but make the network call **outside** the lock.
+
+## Reference
+Syntax you will likely need. The examples use other data than the task, so they show the API, not the solution.
+
+```kotlin
+sealed interface LoadResult {
+    data class Ok(val user: User) : LoadResult
+    data object Offline : LoadResult
+    data object Missing : LoadResult
+}
+
+suspend fun load(id: String): LoadResult = try {
+    LoadResult.Ok(api.user(id).toDomain())
+} catch (e: IOException) {
+    LoadResult.Offline
+} catch (e: HttpError) {
+    when (e.code) {
+        404 -> LoadResult.Missing
+        else -> throw e
+    }
+}
+
+"10:30-18:00".split("-")                              // [10:30, 18:00]
+runCatching { LocalTime.parse("10:30") }.getOrNull()  // 10:30, or null for bad text
+
+val isFresh = Duration.between(savedAt, clock.instant()) < ttl
+
+val mutex = Mutex()
+mutex.withLock { cache[id] = entry }                  // guard shared maps
+
+val pending = CompletableDeferred<User>()
+pending.complete(user)            // or pending.completeExceptionally(error)
+pending.await()                   // every waiter gets the same result
+```
+
+- [Android: data layer](https://developer.android.com/topic/architecture/data-layer)
+- [Kotlin: shared mutable state (Mutex)](https://kotlinlang.org/docs/shared-mutable-state-and-concurrency.html)
+- [Java: Duration](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/Duration.html)

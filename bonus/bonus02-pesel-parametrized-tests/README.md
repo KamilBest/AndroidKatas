@@ -23,3 +23,33 @@ PESEL rules (`YYMMDDZZZZC`, 11 digits):
 - A `sealed` result (`Valid`/`Invalid`) makes the caller handle both cases; exceptions are for unexpected problems, not for invalid input.
 - `LocalDate.of` already knows leap years and month lengths; it throws `DateTimeException` for a date that doesn't exist.
 - JUnit4 `@RunWith(Parameterized::class)`: parameters come through the test class constructor; `name = "{index}: {0}"` makes each case readable. Android instrumented tests still use JUnit4.
+
+## Reference
+Syntax you will likely need. The examples use other data than the task, so they show the API, not the solution.
+
+```kotlin
+@RunWith(Parameterized::class)
+class EvenTest(private val input: Int, private val expected: Boolean) {
+    companion object {
+        @JvmStatic
+        @Parameterized.Parameters(name = "{index}: {0}")
+        fun data() = listOf(
+            arrayOf<Any>(2, true),
+            arrayOf<Any>(3, false),
+        )
+    }
+
+    @Test
+    fun `checks parity`() {
+        assertEquals(expected, input % 2 == 0)
+    }
+}
+
+runCatching { LocalDate.of(2026, 4, 31) }.isFailure    // true: 31 April does not exist
+"12345".all { it.isDigit() }                           // true
+'7'.digitToInt()                                       // 7
+listOf(1, 3).zip(listOf(5, 5)) { a, b -> a * b }.sum() // 20
+```
+
+- [JUnit 4: parameterized tests](https://github.com/junit-team/junit4/wiki/Parameterized-tests)
+- [Java: LocalDate](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/LocalDate.html)

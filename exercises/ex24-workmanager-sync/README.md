@@ -24,3 +24,43 @@ A patient sent a claim with no signal, so it went into a queue (outbox). When th
 - Constraints (network) and backoff belong to the request, not to the worker code.
 - Unique work + `ExistingWorkPolicy.KEEP` means many screens can call `schedule()` and only one sync is queued.
 - A custom `WorkerFactory` (or `HiltWorkerFactory`) is the only way to pass dependencies to a worker's constructor.
+
+## Reference
+Syntax you will likely need. The examples use other data than the task, so they show the API, not the solution.
+
+```kotlin
+class UploadWorker(
+    context: Context,
+    params: WorkerParameters,
+    private val uploader: Uploader,
+) : CoroutineWorker(context, params) {
+    override suspend fun doWork(): Result {
+        runAttemptCount                                  // 0 on the first run
+        return Result.success(workDataOf("count" to 3))  // or Result.retry(), Result.failure()
+    }
+}
+
+class AppWorkerFactory(private val uploader: Uploader) : WorkerFactory() {
+    override fun createWorker(context: Context, className: String, params: WorkerParameters): ListenableWorker? =
+        if (className == UploadWorker::class.java.name) UploadWorker(context, params, uploader) else null
+}
+
+val request = OneTimeWorkRequestBuilder<UploadWorker>()
+    .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.UNMETERED).build())
+    .setBackoffCriteria(BackoffPolicy.LINEAR, 10, TimeUnit.SECONDS)
+    .build()
+WorkManager.getInstance(context)
+    .enqueueUniqueWork("upload", ExistingWorkPolicy.REPLACE, request)   // or KEEP, APPEND
+
+// Test
+val worker = TestListenableWorkerBuilder<UploadWorker>(context)
+    .setWorkerFactory(AppWorkerFactory(fakeUploader))
+    .setRunAttemptCount(2)
+    .build()
+val result = worker.doWork()
+result.outputData.getInt("count", -1)
+```
+
+- [Android: define work requests](https://developer.android.com/develop/background-work/background-tasks/persistent/getting-started/define-work)
+- [Android: managing work (unique work)](https://developer.android.com/develop/background-work/background-tasks/persistent/how-to/manage-work)
+- [Android: testing workers](https://developer.android.com/develop/background-work/background-tasks/testing/persistent/worker-impl)

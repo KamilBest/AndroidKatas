@@ -19,4 +19,34 @@ Pick the right hot stream for three cases: an event bus, a work queue and a shar
 ## Background
 - State → `StateFlow` (keeps only the latest value, conflates). Events for many listeners → `SharedFlow`. Work queue → `Channel` (each element goes to one receiver).
 - `MutableSharedFlow(replay, extraBufferCapacity, onBufferOverflow)`: `replay` is history for new subscribers, the buffer lets `tryEmit` succeed without waiting.
-- `shareIn(scope, WhileSubscribed(stop), replay)` counts subscribers and starts/stops the upstream. Call it once, in a field, not in a function.
+- `shareIn(scope, SharingStarted.WhileSubscribed(stopMs), replay)` counts subscribers and starts/stops the upstream. Call it once, in a field, not in a function.
+
+## Reference
+Syntax you will likely need. The examples use other data than the task, so they show the API, not the solution.
+
+```kotlin
+val state = MutableStateFlow(0)          // keeps only the latest value
+
+val events = MutableSharedFlow<String>(
+    replay = 0,                          // how many old values a new subscriber gets
+    extraBufferCapacity = 8,
+    onBufferOverflow = BufferOverflow.SUSPEND,   // or DROP_OLDEST, DROP_LATEST
+)
+events.tryEmit("hello")                  // not suspend; false when it cannot buffer
+val readOnly: SharedFlow<String> = events.asSharedFlow()
+
+val jobs = Channel<String>(Channel.UNLIMITED)   // each element goes to one receiver
+jobs.trySend("job-1")
+val jobFlow: Flow<String> = jobs.receiveAsFlow()
+
+// Create it once, in a property, not in a function
+val shared: SharedFlow<Int> = upstream.shareIn(
+    scope,
+    SharingStarted.WhileSubscribed(stopTimeoutMillis = 5_000),
+    replay = 0,
+)
+```
+
+- [Android: StateFlow and SharedFlow](https://developer.android.com/kotlin/flow/stateflow-and-sharedflow)
+- [API: MutableSharedFlow](https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/-mutable-shared-flow.html)
+- [Kotlin: channels](https://kotlinlang.org/docs/channels.html)

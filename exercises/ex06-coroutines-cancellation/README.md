@@ -21,3 +21,41 @@ Write code that reacts correctly when its coroutine is cancelled: it removes the
 - `suspendCancellableCoroutine` + `resume`/`resumeWithException` + `invokeOnCancellation` is how you wrap a callback API.
 - In a cancelled coroutine every `suspend` call throws at once. `withContext(NonCancellable)` lets cleanup finish.
 - `catch (e: Exception)` also catches `CancellationException`. Rethrow it or catch a narrower type.
+
+## Reference
+Syntax you will likely need. The examples use other data than the task, so they show the API, not the solution.
+
+```kotlin
+suspend fun awaitValue(): String = suspendCancellableCoroutine { cont ->
+    val call = client.start(object : Callback {
+        override fun onSuccess(value: String) = cont.resume(value)
+        override fun onError(error: Throwable) = cont.resumeWithException(error)
+    })
+    cont.invokeOnCancellation { call.cancel() }
+}
+
+suspend fun crunch(items: List<Int>) {
+    for (item in items) {
+        currentCoroutineContext().ensureActive()   // throws if cancelled
+        heavyStep(item)
+    }
+}
+
+try {
+    work()
+} finally {
+    withContext(NonCancellable) { closeSuspending() }  // a suspend call still runs here
+}
+
+try {
+    work()
+} catch (e: CancellationException) {
+    throw e
+} catch (e: IOException) {
+    // handle
+}
+```
+
+- [Kotlin: cancellation and timeouts](https://kotlinlang.org/docs/coroutines-cancellation.html)
+- [API: suspendCancellableCoroutine](https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines/suspend-cancellable-coroutine.html)
+- [Kotlin: exception handling](https://kotlinlang.org/docs/exception-handling.html)
