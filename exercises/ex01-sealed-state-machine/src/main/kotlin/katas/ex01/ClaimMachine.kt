@@ -27,13 +27,9 @@ sealed interface Transition {
 
 val ClaimState.isTerminal: Boolean
     get() = when (this) {
-        ClaimState.Paid -> true
-        is ClaimState.Rejected -> true
-        is ClaimState.Approved -> false
-        ClaimState.Draft -> false
-        is ClaimState.NeedsInfo -> false
-        ClaimState.Submitted -> false
-        is ClaimState.UnderReview -> false
+        ClaimState.Paid, is ClaimState.Rejected -> true
+        ClaimState.Draft, ClaimState.Submitted, is ClaimState.UnderReview,
+        is ClaimState.NeedsInfo, is ClaimState.Approved -> false
     }
 
 object ClaimMachine {
@@ -41,56 +37,58 @@ object ClaimMachine {
         when (state) {
             ClaimState.Draft ->
                 if (event == ClaimEvent.Submit) Transition.Moved(ClaimState.Submitted)
-                else Transition.Ignored("A draft can only be submitted (Submit)")
+                else Transition.Ignored("A draft can only be submitted")
 
             ClaimState.Submitted ->
-                if (event is ClaimEvent.AssignReviewer) Transition.Moved(ClaimState.UnderReview(event.name))
-                else Transition.Ignored("A submitted claim is waiting for a reviewer (AssignReviewer)")
+                if (event is ClaimEvent.AssignReviewer) Transition.Moved(
+                    ClaimState.UnderReview(
+                        event.name
+                    )
+                )
+                else Transition.Ignored("Waiting for a reviewer")
 
-            is ClaimState.UnderReview -> handleUnderReviewState(state, event)
+            is ClaimState.UnderReview -> reduceUnderReview(state, event)
 
             is ClaimState.NeedsInfo ->
                 if (event is ClaimEvent.ProvideInfo) Transition.Moved(ClaimState.UnderReview(state.reviewer))
-                else Transition.Ignored("The claim is waiting for more information (ProvideInfo)")
+                else Transition.Ignored("Waiting for an answer")
 
             is ClaimState.Approved ->
                 if (event == ClaimEvent.Pay) Transition.Moved(ClaimState.Paid)
-                else Transition.Ignored("An approved claim can only be paid (Pay)")
+                else Transition.Ignored("An approved claim can only be paid")
 
             ClaimState.Paid, is ClaimState.Rejected ->
-                Transition.Ignored("The claim is closed (paid or rejected), this is a final state")
+                Transition.Ignored("The claim is closed")
         }
 
-    private fun handleUnderReviewState(
-        state: ClaimState.UnderReview,
-        event: ClaimEvent
-    ): Transition {
-        return when (event) {
+    private fun reduceUnderReview(state: ClaimState.UnderReview, event: ClaimEvent): Transition =
+        when (event) {
             is ClaimEvent.RequestInfo -> Transition.Moved(
                 ClaimState.NeedsInfo(
-                    question = event.question,
-                    reviewer = state.reviewer
+                    state.reviewer,
+                    event.question
                 )
             )
 
             is ClaimEvent.Approve ->
                 if (event.amountMinor > 0) Transition.Moved(ClaimState.Approved(event.amountMinor))
-                else Transition.Ignored("Approved amount must be greater than zero")
+                else Transition.Ignored("Amount must be greater than 0")
 
             is ClaimEvent.Reject ->
                 if (event.reason.isNotBlank()) Transition.Moved(ClaimState.Rejected(event.reason))
-                else Transition.Ignored("Rejection requires a reason")
+                else Transition.Ignored("Rejection needs a reason")
 
-            else -> Transition.Ignored("Under review only Approve, Reject or RequestInfo are allowed")
+            else -> Transition.Ignored("Only Approve, Reject or RequestInfo here")
         }
-    }
 
-    fun replay(events: List<ClaimEvent>): ClaimState =
-        events.fold<ClaimEvent, ClaimState>(ClaimState.Draft) { state, event ->
-            when (val t = reduce(state, event)) {
-                is Transition.Moved -> t.to
+    fun replay(events: List<ClaimEvent>): ClaimState {
+        val start: ClaimState = ClaimState.Draft
+        return events.fold(start) { state, event ->
+            when (val transition = reduce(state, event)) {
+                is Transition.Moved -> transition.to
                 is Transition.Ignored -> state
             }
         }
+    }
 }
 
