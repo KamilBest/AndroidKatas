@@ -11,7 +11,7 @@ The `main` branch has only the tasks and starter code, so you can fork it (keep 
 | # | Kata | Topics | My solution |
 |---|---|---|---|
 | ex01 | [Claim state machine](exercises/ex01-sealed-state-machine/README.md) | `sealed`, exhaustive `when`, reducer | [ClaimMachine.kt](https://github.com/KamilBest/AndroidKatas/blob/my-solutions/exercises/ex01-sealed-state-machine/src/main/kotlin/katas/ex01/ClaimMachine.kt) |
-| ex02 | [Claims report with collection operators](exercises/ex02-collections-claims-report/README.md) | `groupBy`, `sortedWith`, composite key, `Sequence` |  |
+| ex02 | [Claims report with collection operators](exercises/ex02-collections-claims-report/README.md) | `groupBy`, `sortedWith`, composite key, `Sequence` | [ClaimsReport.kt](https://github.com/KamilBest/AndroidKatas/blob/my-solutions/exercises/ex02-collections-claims-report/src/main/kotlin/katas/ex02/ClaimsReport.kt) |
 | ex03 | [LRU cache in O(1)](exercises/ex03-data-structures/README.md) | `HashMap` + doubly linked list, O(1), generics |  |
 | ex04 | [Kotlin idioms](exercises/ex04-kotlin-idioms/README.md) | `value class`, delegation, variance, `reified`, `equals`/`hashCode` |  |
 
