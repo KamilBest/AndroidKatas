@@ -5,6 +5,10 @@
 ## Goal
 The app classes are ready, only the Hilt wiring is missing. Add it, so that the graph builds and a test can replace a dependency.
 
+Hilt creates your objects and passes in their dependencies, based on annotations. The app classes already exist: an API, a repository, a formatter and a ViewModel. What is missing is the wiring that tells Hilt how to build each one, which ones exist only once (singletons), and how to tell two `CoroutineDispatcher`s apart.
+
+You add Hilt modules and annotations. A ready Robolectric test builds the graph, replaces the API with a fake, and checks what it gets.
+
 - **Files:** `Modules.kt` (modules) and `Prescriptions.kt` (annotations only, no logic changes)
 - **Run:** `./gradlew :ex16-hilt-di:testDebugUnitTest` (Robolectric + `HiltTestApplication`)
 

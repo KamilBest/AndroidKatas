@@ -5,6 +5,10 @@
 ## Goal
 Write the network layer of a "Pharmacies" feature. The tests run real Retrofit against a local HTTP server and check *what you send* (path, query, body) and *how you parse* the response.
 
+Retrofit turns an annotated Kotlin interface into real HTTP calls, and kotlinx.serialization turns JSON into data classes. You write both for a pharmacy API: data classes for the JSON, the interface with paths and parameters, the Retrofit setup, and a small data source that turns HTTP status codes into results.
+
+The tests start a local fake server (`MockWebServer`), give it ready responses, and check the exact request you sent: the path, the query and the body.
+
 - **Files:** `Dtos.kt`, `PharmacyApi.kt`
 - **Run:** `./gradlew :ex20-retrofit-mockwebserver:test`
 

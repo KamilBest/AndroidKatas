@@ -5,6 +5,10 @@
 ## Goal
 Build a small report from a list of claims using collection operators instead of loops.
 
+An insurance back office has a list of claims. Each `Claim` has a patient, a provider (clinic), a category, an amount in grosze and a date. The report answers four questions: how much was claimed in each category, which providers cost the most, which claims look like they were entered twice, and which are the first big claims in a stream that never ends.
+
+Example: claims `DENTAL 100`, `DENTAL 50`, `PHARMACY 30` give `totalByCategory` = `{DENTAL=150, PHARMACY=30}`.
+
 - **File:** `ClaimsReport.kt` (each function has a KDoc)
 - **Run:** `./gradlew :ex02-collections-claims-report:test`
 

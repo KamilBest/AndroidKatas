@@ -5,6 +5,12 @@
 ## Goal
 Write a PESEL (Polish national ID) validator that returns a result instead of throwing, and write your own parameterized test.
 
+PESEL is the Polish national ID number: 11 digits that hold the birth date, a serial number, the sex and a check digit. A validator reads it and either returns the date and sex, or says exactly what is wrong.
+
+Example: `44051401458` is valid: born 14 May 1944, male. `4405140145` is `WRONG_LENGTH`.
+
+You write the validator, and one parameterized test: one test method that runs on a list of inputs.
+
 - **Files:** `Pesel.kt`, `PeselInvalidDateTest.kt` (you write this test)
 - **Run:** `./gradlew :bonus02-pesel-parametrized-tests:test`
 

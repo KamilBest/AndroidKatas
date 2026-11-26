@@ -5,6 +5,10 @@
 ## Goal
 The code works, but it recomposes too often. Fix three typical mistakes. The tests count recompositions with "sensors" (`counter.hit(...)`) and stay red until you do.
 
+Recomposition means Compose runs a composable again to update the UI. One run is cheap, but running on every scrolled pixel or every animation frame makes a screen slow.
+
+The code here works and looks right, but each of the three composables recomposes far more often than needed. The tests count recompositions and expect a low number. You remove the three causes without changing what the user sees.
+
 - **File:** `Performance.kt`
 - **Run:** `./gradlew :ex28-compose-performance:testDebugUnitTest` (Robolectric)
 

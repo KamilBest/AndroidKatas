@@ -5,6 +5,10 @@
 ## Goal
 Turn an untestable booking service into a class with injected dependencies, so the ready tests pass.
 
+`BookingService` books a doctor's visit and works in production, but you can't test it. It reads the real clock, makes random ids, calls a global HTTP singleton and starts background work in `GlobalScope`. A test can't say "it is Monday 10:00", can't know the id in advance, and can't replace the network.
+
+You refactor it into a class that gets all of these through its constructor, without changing what it does. The ready tests pass fakes (a fixed clock, fixed ids, a fake API) and stay red until the refactor is done.
+
 - **File:** `BookingService.kt` (tests are ready; they don't compile before the refactor)
 - **Run:** `./gradlew :ex13-make-it-testable:test detektMain`
 

@@ -5,6 +5,10 @@
 ## Goal
 Write a `Money` type that counts money with no rounding errors and never loses a grosz.
 
+Money is easy to get wrong in code: with `Double`, `0.1 + 0.2` is `0.30000000000000004`, and splitting 100 zł into 3 parts can lose a grosz. `Money` stores the amount as a whole number of grosze. It parses text like `"12.34"`, does arithmetic that fails loudly on overflow, computes percentages with a clear rounding rule, and splits amounts so the parts always add up to the total.
+
+Example: 100.00 zł split into 3 gives `[33.34, 33.33, 33.33]`, which adds up to 100.00.
+
 - **File:** `Money.kt`
 - **Run:** `./gradlew :bonus01-kotlin-money:test`
 

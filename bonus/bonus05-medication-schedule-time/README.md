@@ -5,6 +5,10 @@
 ## Goal
 Write a medication schedule that works correctly also on the days when the clocks change (DST).
 
+A medication schedule turns a plan ("at 8:00 and 20:00", "every 8 hours", "Mondays at 9:00") into exact moments in time. Twice a year this is tricky: when the clocks go forward, 02:30 does not exist that night; when they go back, 02:30 happens twice. A schedule that simply adds 24 hours also slowly drifts by an hour.
+
+You write functions that list the doses in a date range, find the next dose and find missed doses, correct also on those two days.
+
 - **File:** `Schedule.kt`
 - **Run:** `./gradlew :bonus05-medication-schedule-time:test`
 

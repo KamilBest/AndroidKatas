@@ -5,6 +5,10 @@
 ## Goal
 Write UI tests for a ready refund claim form.
 
+The form is ready and you write the tests. `ClaimForm` is a Compose form for a refund claim: an amount, a description, a category, and a submit button that is enabled only when the form is valid. Your tests type into fields, click, and check what is shown and what is sent. They run on the JVM with Robolectric.
+
+Example test: type `123,45`, pick "Drugs", type a description, click "Submit claim": `onSubmit` gets an amount of `12345` grosze.
+
 - **File:** `ClaimFormTest.kt` (the form in `ClaimForm.kt` is ready, don't change it)
 - **Run:** `./gradlew :ex26-compose-write-ui-tests:testDebugUnitTest`
 

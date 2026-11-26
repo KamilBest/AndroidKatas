@@ -5,6 +5,12 @@
 ## Goal
 Write the use case that refunds an invoice (dentist, physiotherapy) within a yearly limit, and keep the domain layer free of Retrofit, Room and Android. The ready `ArchitectureTest` reads imports and checks these rules.
 
+An insured person sends an invoice (dentist, physiotherapy) and wants the money back. The policy has a yearly limit for each benefit, and a refund is paid only up to what is left of that limit.
+
+Example: limit 1000 zł, already used 800 zł this year, invoice 300 zł gives `Accepted(200 zł)`.
+
+The code is split into layers: `domain` (business rules) and `data` (API models). The domain must not depend on the data layer; a ready test reads the imports and checks it. You fix one wrong import, write the use case with its checks, and write the mapper from the API model.
+
 - **Files:** `domain/UseCases.kt`, `domain/BenefitNames.kt`, `data/InvoiceDto.kt`
 - **Run:** `./gradlew :ex12-clean-architecture:test`
 - **Small steps:** `StepsTest.kt` tests single building blocks, start there: `./gradlew :ex12-clean-architecture:test --tests '*StepsTest'`

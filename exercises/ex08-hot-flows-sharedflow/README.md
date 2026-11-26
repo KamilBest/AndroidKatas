@@ -5,6 +5,10 @@
 ## Goal
 Pick the right hot stream for three cases: an event bus, a work queue and a shared sensor.
 
+A hot stream emits values whether anyone collects them or not. Kotlin has three common ones, and each behaves differently: `StateFlow` always holds one current value, `SharedFlow` sends each event to everyone who is listening right now, and `Channel` is a queue where each item is taken by exactly one receiver.
+
+You get three real cases from an app and pick and configure the right one for each: session events (like "logged out") that every open screen must see, a download queue where two workers must never take the same file, and one heart rate sensor shared by several screens.
+
 - **File:** `HotFlows.kt`
 - **Run:** `./gradlew :ex08-hot-flows-sharedflow:test`
 

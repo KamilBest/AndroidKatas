@@ -5,6 +5,10 @@
 ## Goal
 Write the DAO of a "My medications" app: SQL queries and one transaction. Entities, the `Instant` converter and `AppDatabase` are ready.
 
+Room generates the database code from a DAO: an interface or abstract class where each method has an annotation and, often, SQL. You write the DAO of a medication app: save medications, list them A to Z, list doses in a time range as a `Flow`, mark a dose as taken (only once), and replace future doses in one transaction.
+
+The entities and the database class are ready. The tests run on an in-memory database.
+
 - **File:** `MedicationDao.kt`
 - **Run:** `./gradlew :ex22-room-dao:testDebugUnitTest` (Robolectric, no emulator)
 

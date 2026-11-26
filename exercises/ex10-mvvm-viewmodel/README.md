@@ -5,6 +5,12 @@
 ## Goal
 Write the ViewModel of a list screen: loading, refresh, a full-screen error or a snackbar, and a click that opens details.
 
+A list of claims with everything a real screen has: a first load with a spinner, pull-to-refresh and errors. The data comes from a repository: `observeClaims()` streams what is stored, and `refresh()` gets new data from the network.
+
+The ViewModel turns this into one `UiState` for the screen, plus one-time events (open details, show a snackbar) that must happen exactly once, also around a screen rotation.
+
+Example: no data and no network shows a full-screen error with Retry. Old data and no network keeps the list and shows the snackbar "Could not refresh".
+
 - **File:** `ClaimsViewModel.kt` (the model and `formatPln` are ready in `Claims.kt`)
 - **Run:** `./gradlew :ex10-mvvm-viewmodel:testDebugUnitTest`
 

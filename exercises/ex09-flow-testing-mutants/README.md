@@ -5,6 +5,12 @@
 ## Goal
 Write tests for a heart rate monitor that are good enough to catch 11 hidden bugs (mutants).
 
+This time the code is ready and you write the tests. `VitalsMonitor` reads heart rate values as a `Flow` and emits alerts (`HIGH`, `LOW`) and a running average. Your tests should describe these rules so precisely that any small change in the code makes at least one test fail.
+
+To check that, the build has 11 copies of the code, each with one small bug (a *mutant*), for example `>` changed to `>=`. `mutationTest` runs your tests against each copy. A copy where all your tests still pass has "survived", which means your tests missed that bug.
+
+Example rule: readings `121, 121, 121` produce one `HIGH` alert.
+
 - **File:** `VitalsMonitorTest.kt` (the code in `VitalsMonitor.kt` is ready, don't change it)
 - **Run:** `./gradlew :ex09-flow-testing-mutants:test`, then `:mutationTest` (target 11/11)
 

@@ -5,6 +5,12 @@
 ## Goal
 Write the "Today's doses" screen as a stateless composable that passes ready UI tests. The tests run on the JVM (Robolectric), no emulator.
 
+A screen with today's medicine doses. The user can tick a dose as taken and hide the doses that are already taken. The composable gets the whole state as a parameter and reports user actions through lambdas; it keeps no state of its own (this is called state hoisting).
+
+The ready UI tests find elements by text and by test tag, click them and check the result.
+
+Example: 3 doses, 1 taken: the header says `"Today: 1/3 taken"`.
+
 - **File:** `DoseScreen.kt` (the state in `DoseUiState.kt` is ready)
 - **Run:** `./gradlew :ex25-compose-state-ui:testDebugUnitTest`
 

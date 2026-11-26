@@ -5,6 +5,10 @@
 ## Goal
 Write the state machine of a refund claim as one pure function: `(state, event) -> next state`. An event that is not allowed must never change the state.
 
+A refund claim goes through fixed steps: the patient writes it, sends it, a reviewer checks it, and it ends up paid or rejected. A state machine describes this as a list of states plus rules saying which event moves the claim from one state to the next. Events can come at the wrong time (a double click, a late message), so for every pair (state, event) the machine decides: move, or ignore and say why.
+
+Example: in `Submitted`, `AssignReviewer("Anna")` moves the claim to `UnderReview("Anna")`. In `Submitted`, `Pay` is `Ignored("Waiting for a reviewer")` and the claim stays `Submitted`.
+
 - **File:** `ClaimMachine.kt`
 - **Run:** `./gradlew :ex01-sealed-state-machine:test`
 
