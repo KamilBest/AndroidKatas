@@ -5,6 +5,12 @@
 ## Goal
 Write the ViewModels of a prescription list and its details screen: mapping, screen states and error handling. The repository is ready (an interface). Treat it as a take-home task with a 50-minute timer.
 
+A small list-and-details app, like a typical take-home task: you get a repository and the screen models, and you write the logic in between.
+
+The list ViewModel turns prescriptions into display items (a title, "Valid until …", a badge), sorts them, and handles loading, an empty list, and errors with or without saved data. The details ViewModel shows one prescription by its id from the navigation arguments.
+
+Example: a prescription valid until yesterday and not redeemed gets the badge `EXPIRED`.
+
 - **File:** `ViewModels.kt` (domain and screen states in `Domain.kt`)
 - **Run:** `./gradlew :ex30-take-home-list-detail:testDebugUnitTest`
 - **Small steps:** `StepsTest.kt` tests single building blocks, start there: `./gradlew :ex30-take-home-list-detail:testDebugUnitTest --tests '*StepsTest'`

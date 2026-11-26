@@ -5,6 +5,10 @@
 ## Goal
 Write four small composables, each with a different side effect.
 
+A composable function can run many times (recomposition). Work that must not repeat on every run, like loading data, registering a listener or starting a timer, is a *side effect*. Compose has special functions that tie such work to the life of the composable: start it when the composable appears, restart it when a key changes, stop it when the composable leaves.
+
+You write four small composables, each with a different case: load data when an id changes, register and unregister a listener, a timer that calls the newest callback, and handling events only while the screen is visible.
+
 - **File:** `SideEffects.kt`
 - **Run:** `./gradlew :ex27-compose-side-effects:testDebugUnitTest` (Robolectric)
 

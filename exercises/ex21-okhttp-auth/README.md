@@ -5,6 +5,10 @@
 ## Goal
 Add the access token to every request automatically, and refresh it only once after a `401`, even when 5 requests get `401` at the same time.
 
+Most APIs need an access token in every request. Tokens expire: the server answers `401`, the app gets a new token using a refresh token, and repeats the request. OkHttp has two places for this: an `Interceptor` runs for every request and adds the header, and an `Authenticator` runs only after a `401`.
+
+The hard case: 5 requests get `401` at the same time. A naive version refreshes 5 times, and the server may invalidate the earlier tokens. You write both parts so that only one refresh happens and the other 4 requests retry with the new token.
+
 - **File:** `Auth.kt`
 - **Run:** `./gradlew :ex21-okhttp-auth:test`
 

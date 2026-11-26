@@ -5,6 +5,12 @@
 ## Goal
 Write the reducer of a visit booking screen (pick a doctor, then a slot, then confirm). In MVI all screen logic lives in one pure function `reduce(state, intent)`, which you test without coroutines and without mocks.
 
+Booking a visit takes three steps: pick a doctor, pick a time slot, confirm. The screen sends *intents* (what happened, for example "doctor d1 selected"). One function, the reducer, takes the current state and an intent and returns the new state plus a list of *effects* (work to do outside, for example "fetch slots for d1"). The reducer does no I/O itself, so you test it with plain values.
+
+Example: `SelectDoctor("d1")` gives step `PICK_SLOT`, doctor `d1`, `isLoading = true`, and the effect `FetchSlots("d1")`.
+
+You write only the reducer, following the table below.
+
 - **File:** `BookingReducer.kt` (types are ready in `Contract.kt`)
 - **Run:** `./gradlew :ex11-mvi-reducer:test`
 

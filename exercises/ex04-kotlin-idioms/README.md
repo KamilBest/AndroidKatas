@@ -5,6 +5,14 @@
 ## Goal
 Implement six small Kotlin features: a value class, delegation, variance, `reified`, `equals`/`hashCode` and `lazy`. Each takes a few lines.
 
+Six small, independent exercises in one file. Each shows a Kotlin feature you use every day:
+- `Grosze` wraps an amount in grosze, so it can't be mixed up with other numbers: `Grosze(1349)` prints `"13,49 zł"`.
+- `CountingSet` works like a normal set, but also counts how many times something was added.
+- `Box` and `Sink` show when a generic type can stand in for another (a box of `String` used as a box of `Any`).
+- `firstOfType<T>()` finds the first element of a type: `listOf(1, "a", 2.0).firstOfType<String>()` is `"a"`.
+- `PatientKey` treats `"Jan Kowalski"` and `"JANKOWALSKI"` as the same key, also inside a `HashSet`.
+- `Report.summary` is expensive, so it is computed on first use and then reused.
+
 - **File:** `Idioms.kt`
 - **Run:** `./gradlew :ex04-kotlin-idioms:test`
 

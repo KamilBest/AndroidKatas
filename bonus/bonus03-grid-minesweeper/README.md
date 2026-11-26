@@ -5,6 +5,12 @@
 ## Goal
 Write the logic of Minesweeper and a shortest path in a maze, with no graphics and an immutable game state.
 
+Two classic grid problems.
+- **Minesweeper:** a board with hidden mines. Revealing a cell shows a mine (you lose) or the number of mines around it; revealing a 0 also opens the whole empty area around it. You win when every cell without a mine is revealed.
+- **Shortest path:** in a maze with walls (`#`), find the shortest route between two cells, moving only up, down, left and right.
+
+The game state is immutable: every move returns a new `Game`.
+
 - **Files:** `Minesweeper.kt`, `Pathfinding.kt`
 - **Run:** `./gradlew :bonus03-grid-minesweeper:test`
 

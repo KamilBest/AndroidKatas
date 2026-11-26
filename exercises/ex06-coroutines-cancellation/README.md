@@ -5,6 +5,10 @@
 ## Goal
 Write code that reacts correctly when its coroutine is cancelled: it removes the listener, stops the loop and cleans up.
 
+On Android coroutines are cancelled all the time: the user leaves the screen, a ViewModel is cleared, a newer search replaces the old one. Cancelling only *asks* a coroutine to stop. The code has to notice it and clean up, otherwise a GPS listener keeps running, a loop keeps using the CPU, or a lock is never released.
+
+The file has four small classes, each with one of these cases: a callback API (location), a long CPU loop, cleanup that must always run, and a retry loop that by mistake ignores cancellation. You make each one stop and clean up correctly.
+
 - **File:** `Cancellation.kt`
 - **Run:** `./gradlew :ex06-coroutines-cancellation:test`
 

@@ -5,6 +5,12 @@
 ## Goal
 Write the ViewModel of a visit form that comes back filled in after the system kills the app.
 
+Android can kill an app in the background to free memory. When the user comes back, the screen is rebuilt, but the ViewModel is new and empty, so a half-filled form is lost. `SavedStateHandle` is a small key-value store that Android saves and restores for you.
+
+You write the ViewModel of a "Book a visit" form whose fields survive this, while things that should not survive (a running request, its result) are not saved.
+
+Example: the user types symptoms, the app is killed in the background, the user returns: the symptoms are still there and `isSubmitting` is `false`.
+
 - **File:** `VisitForm.kt`
 - **Run:** `./gradlew :ex15-savedstate-viewmodel:testDebugUnitTest`
 

@@ -5,6 +5,10 @@
 ## Goal
 Write a repository where the UI **always** reads from the database and the network only updates it. `ClaimsDao` and `ClaimsApi` fake Room and Retrofit, so tests are fast and plain JVM.
 
+An offline-first app works without the network: the screen always shows what is in the local database, and the network only refreshes that database. The screen never waits for the network and never goes empty when the phone is offline.
+
+You write the repository that connects both sides: mappers between the API, database and app models, observing claims from the database, and a `refresh` that skips the network when the data is fresh, saves new data on success, keeps the old data on error, and never runs twice at the same time.
+
 - **File:** `OfflineFirstClaimsRepository.kt` (types in `Contracts.kt`)
 - **Run:** `./gradlew :ex19-offline-first-repository:test`
 - **Small steps:** `StepsTest.kt` tests single building blocks, start there: `./gradlew :ex19-offline-first-repository:test --tests '*StepsTest'`

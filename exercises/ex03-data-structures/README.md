@@ -5,6 +5,12 @@
 ## Goal
 Write an LRU (least recently used) cache where `get` and `put` are O(1).
 
+A cache keeps a limited number of values in memory so the app does not load them again (for example decoded images or API responses). When the cache is full and a new value comes in, one old value must go. An LRU (least recently used) cache removes the one that was read or written the longest time ago.
+
+Example with capacity 2: `put(a)`, `put(b)`, `get(a)`, `put(c)`. Now `b` is removed, because `a` was used more recently. `keysInOrder()` returns `[a, c]`.
+
+`get` and `put` must take the same short time no matter how many entries there are (the test runs 200,000 operations).
+
 - **File:** `LruCache.kt`
 - **Run:** `./gradlew :ex03-data-structures:test`
 

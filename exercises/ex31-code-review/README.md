@@ -5,6 +5,10 @@
 ## Goal
 Review a colleague's pull request: find the problems, rank them and explain each one.
 
+A colleague opened a pull request with a new feature in 4 files. It compiles and the happy path works, but it has many problems: security and privacy, memory leaks, coroutines, UI state, Compose and error handling.
+
+Your job is the reviewer's job: find the problems, decide how serious each one is, and explain each so the author knows what to change and why. You don't have to fix the code.
+
 - **Read:** `PR_DESCRIPTION.md` and the 4 files in `src/main/kotlin/katas/ex31/`
 - **Output:** `REVIEW.md` in the module folder
 

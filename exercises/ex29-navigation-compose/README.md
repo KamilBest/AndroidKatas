@@ -5,6 +5,12 @@
 ## Goal
 Connect a prescription list and a details screen with Navigation Compose. Screens and routes are ready, only the navigation is missing.
 
+Two screens: a list of prescriptions and the details of one prescription. Navigation Compose moves between them: it keeps a back stack of screens, passes arguments (the prescription id) and can send a result back to the previous screen.
+
+Example: click `rx-2` → the details of `rx-2` → "Redeem" → back on the list, which now shows `"Redeemed: rx-2"`.
+
+The screens and routes are ready. You write the `NavHost` that connects them.
+
 - **File:** `AppNavHost.kt` (screens and routes in `Screens.kt`)
 - **Run:** `./gradlew :ex29-navigation-compose:testDebugUnitTest` (Robolectric)
 

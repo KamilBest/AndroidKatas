@@ -5,6 +5,12 @@
 ## Goal
 Write a repository that only has a local database (a dose diary). The UI observes a `Flow`, and the repository turns database rows into the screen model. `DoseDao` fakes Room, so tests are plain JVM.
 
+A dose diary: the user sees today's medicine doses and marks them as taken. Everything is stored only in a local database, and the screen observes it as a `Flow`, so the list updates by itself after every change.
+
+The repository turns database rows (times as `Instant`, a "taken at" field) into what the screen shows: the name and dose, the local time, and a status `TAKEN`, `MISSED` or `PENDING`.
+
+Example: a dose planned for 08:00, now 09:00, `missedAfter` 30 min, not taken: `MISSED`.
+
 - **File:** `DoseRepository.kt` (types in `Contracts.kt`)
 - **Run:** `./gradlew :ex18-room-repository:test`
 - **Small steps:** `StepsTest.kt` tests single building blocks, start there: `./gradlew :ex18-room-repository:test --tests '*StepsTest'`

@@ -5,6 +5,10 @@
 ## Goal
 Load three things in parallel for a "My insurance" screen, and decide what happens when one of them fails or is too slow.
 
+The "My insurance" screen needs three things from three endpoints: the profile, the policies and the claims. Loading them one after another takes the sum of the three times; loading them in parallel takes only as long as the slowest one.
+
+The interesting part is failure. Should one failed request break the whole screen, or only its own part? And what if the network is just slow? You write three functions that answer this in three ways: all or nothing, each request on its own, and a cached value when the request takes too long.
+
 - **File:** `Loading.kt`
 - **Run:** `./gradlew :ex05-coroutines-basics:test`
 

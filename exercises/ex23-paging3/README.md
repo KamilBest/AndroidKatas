@@ -5,6 +5,12 @@
 ## Goal
 Write the `PagingSource` for a long list of pharmacies from an API with page numbers. You test the `PagingSource` without UI, using `TestPager`.
 
+A list of thousands of pharmacies can't be loaded at once. Paging 3 loads it page by page while the user scrolls. The API takes a page number and a page size, for example `page = 2, size = 20`. A `PagingSource` is the piece that loads one page and says which page comes before and after it.
+
+Example: loading page 1 returns 20 items, `prevKey = null` (nothing before) and `nextKey = 2`.
+
+You write the `PagingSource`, plus the function that tells Paging which page to load again after a refresh.
+
 - **File:** `Pharmacies.kt`
 - **Run:** `./gradlew :ex23-paging3:test`
 - **Small steps:** `StepsTest.kt` tests single building blocks, start there: `./gradlew :ex23-paging3:test --tests '*StepsTest'`

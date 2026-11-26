@@ -5,6 +5,10 @@
 ## Goal
 Write a fake repository and run one shared test suite (a contract) on every implementation. The contract will find a bug in the "production" one.
 
+Tests often use a *fake*: a simple in-memory version of a real dependency, for example a repository built on a map instead of a database. Fakes are fast, but they can lie: if the fake behaves differently from the real implementation, tests pass and production breaks.
+
+A *contract test* solves this: one set of tests that every implementation must pass. You write the fake `InMemoryPatientRepository`, run the ready contract on it and on `TablePatientRepository` (which pretends to be an SQL table), find the bug the contract shows in the second one, and write a small use case that registers a patient.
+
 - **Files:** `InMemoryPatientRepository.kt`, `RegisterPatientUseCase.kt`, `TablePatientRepository.kt`, new tests in `src/test`
 - **Run:** `./gradlew :ex14-fakes-contract-tests:test`
 

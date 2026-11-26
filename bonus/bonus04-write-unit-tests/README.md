@@ -5,6 +5,12 @@
 ## Goal
 Write tests for an insurance premium calculator that catch 13 hidden bugs (mutants).
 
+The calculator is ready and you write the tests. `PremiumCalculator` computes a monthly or yearly insurance price from the plan, the age, smoking, family members and years with the company (the rules are in the table below). Your tests should catch any small change to these rules.
+
+13 copies of the calculator each have one small bug (a *mutant*). `mutationTest` shows which of them your tests miss.
+
+Example: plan STANDARD, age 30, nothing else gives 90.00 zł a month, which is `9000` grosze.
+
 - **File:** `PremiumCalculatorTest.kt` (the calculator is ready, don't change it)
 - **Run:** `./gradlew :bonus04-write-unit-tests:mutationTest` (target 13/13)
 

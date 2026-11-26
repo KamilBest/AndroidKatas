@@ -5,6 +5,12 @@
 ## Goal
 Build a drug search that does not call the API on every key press, and turn a callback sensor API into a `Flow`.
 
+A search field: the user types `i`, `ib`, `ibu`, `ibup` quickly. Calling the API on every key press would send 4 requests, and the answers could arrive in the wrong order. A good search waits until the user stops typing, skips queries that are too short or the same as the last one, and shows only the answer to the newest query.
+
+The screen observes one `StateFlow<SearchState>`, which is `Idle`, `Loading`, `Results` or `Error`. Example: typing `ibup` within 300 ms makes one API call, for `ibup`, and the state goes `Idle` → `Loading` → `Results`.
+
+The second part takes a heart rate sensor that reports values to a listener and turns it into a `Flow`.
+
 - **File:** `Flows.kt`
 - **Run:** `./gradlew :ex07-flow-operators:test`
 - **Small steps:** `StepsTest.kt` tests single building blocks, start there: `./gradlew :ex07-flow-operators:test --tests '*StepsTest'`

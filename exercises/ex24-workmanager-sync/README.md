@@ -5,6 +5,10 @@
 ## Goal
 A patient sent a claim with no signal, so it went into a queue (outbox). When the network is back, WorkManager must send it, even if the app is closed. Write the worker, its factory and the scheduling.
 
+Some work must finish even if the user closes the app, for example sending a claim that was written offline. WorkManager runs such work when its conditions are met (the network is available), retries it later after a failure, and survives app and phone restarts.
+
+Unsent claims wait in an `Outbox`. You write the worker that sends them and reports success, retry or failure; a factory that gives the worker its `Outbox`; and the scheduling: only with network, with backoff, and never two syncs in the queue.
+
 - **File:** `SyncWorker.kt` (`Outbox` is ready)
 - **Run:** `./gradlew :ex24-workmanager-sync:testDebugUnitTest` (Robolectric)
 

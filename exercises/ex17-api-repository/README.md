@@ -5,6 +5,12 @@
 ## Goal
 Write a repository that only talks to the network (no database): it maps DTOs to the domain, turns exceptions into domain errors, caches results and never sends the same request three times at once. `PharmacyApi` fakes Retrofit, so tests are plain JVM.
 
+A "Pharmacy details" screen loads its data straight from the network. Between the API and the screen sits a repository that:
+- turns the API model (opening hours as text, `"08:00-20:00"`) into the app model (two times),
+- turns exceptions into a few results the UI can show: `Offline`, `NotFound`, `Server`,
+- remembers a successful answer for a while, so going back and forth is instant,
+- makes sure three screens asking for the same pharmacy at the same moment cause only one request.
+
 - **File:** `PharmacyRepository.kt` (types in `Contracts.kt`)
 - **Run:** `./gradlew :ex17-api-repository:test`
 - **Small steps:** `StepsTest.kt` tests single building blocks, start there: `./gradlew :ex17-api-repository:test --tests '*StepsTest'`
